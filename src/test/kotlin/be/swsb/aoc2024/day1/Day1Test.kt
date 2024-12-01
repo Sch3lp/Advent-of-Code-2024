@@ -36,7 +36,6 @@ fun String.solve(): Long {
     val distances = sortedLocationPairs.map(LocationPair::distance)
     return distances.sum()
 }
-
 fun String.solve2(): Long {
     val (left, right) = extractLocationIds()
     val leftSimilarities = left.map { locationId -> locationId.similaritiesIn(right) }
@@ -52,32 +51,25 @@ fun String.extractLocationIds(): Pair<List<LocationId>, List<LocationId>> {
     }
     return locationIdPairs.unzip()
 }
-
-@JvmInline
-value class LocationId(private val value: Long): Comparable<LocationId> {
+private fun String.toLocationId() = LocationId(this.toLong())
+@JvmInline value class LocationId(private val value: Long): Comparable<LocationId> {
     override fun compareTo(other: LocationId): Int = this.value.compareTo(other.value)
     fun distanceTo(other: LocationId) = Distance((this.value - other.value))
     operator fun times(occurrences: Int): SimilarityScore = SimilarityScore(this.value * occurrences)
     fun similaritiesIn(locationIds: List<LocationId>) = Similarity(this, locationIds.count { this == it })
 }
-private fun String.toLocationId() = LocationId(this.toLong())
-fun LocationPair.distance() = first.distanceTo(second)
+
 typealias LocationPair = Pair<LocationId, LocationId>
+fun LocationPair.distance() = first.distanceTo(second)
 
 data class Distance(private val value: Long): Comparable<Distance> {
     private val absoluteValue = value.absoluteValue
     override fun compareTo(other: Distance): Int = this.absoluteValue.compareTo(other.absoluteValue)
-    companion object {
-        fun List<Distance>.sum() = sumOf { it.absoluteValue }
-    }
+    companion object { fun List<Distance>.sum() = sumOf { it.absoluteValue } }
 }
-
 data class Similarity(private val locationId: LocationId, private val occurrences: Int) {
     val similarityScore: SimilarityScore get() = locationId * occurrences
 }
-
 @JvmInline value class SimilarityScore(private val value: Long) {
-    companion object {
-        fun List<SimilarityScore>.sum() = sumOf { it.value }
-    }
+    companion object { fun List<SimilarityScore>.sum() = sumOf { it.value } }
 }
