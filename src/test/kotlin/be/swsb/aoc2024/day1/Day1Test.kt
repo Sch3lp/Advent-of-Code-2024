@@ -45,7 +45,11 @@ fun String.solve2(): Long {
 }
 
 fun String.extractLocationIds(): Pair<List<LocationId>, List<LocationId>> {
-    val locationIdPairs = lines().map { line -> line.split("   ").let { (left, right) -> left.toLocationId() to right.toLocationId() } }
+    val locationIdPairs = lines().map { line ->
+        line.split("   ").let { (left, right) ->
+            left.toLocationId() to right.toLocationId()
+        }
+    }
     return locationIdPairs.unzip()
 }
 
