@@ -31,20 +31,20 @@ class Day1Test : FunSpec({
 })
 
 fun String.solve(): Long {
-    val (left, right) = extractLocationIdPairs()
+    val (left, right) = extractLocationIds()
     val sortedLocationPairs = left.sorted().zip(right.sorted())
     val distances = sortedLocationPairs.map(LocationPair::distance)
     return distances.sum()
 }
 
 fun String.solve2(): Long {
-    val (left, right) = extractLocationIdPairs()
+    val (left, right) = extractLocationIds()
     val leftSimilarities = left.map { locationId -> locationId.similaritiesIn(right) }
     val similarityScores = leftSimilarities.map(Similarity::similarityScore)
     return similarityScores.sum()
 }
 
-fun String.extractLocationIdPairs(): Pair<List<LocationId>, List<LocationId>> {
+fun String.extractLocationIds(): Pair<List<LocationId>, List<LocationId>> {
     val locationIdPairs = lines().map { line -> line.split("   ").let { (left, right) -> left.toLocationId() to right.toLocationId() } }
     return locationIdPairs.unzip()
 }
