@@ -30,7 +30,7 @@ class Day2Test : FunSpec({
 
     test("actual input part 2") {
         val input = readFile("day2/input.txt")
-        input.solve2() shouldBeGreaterThan 320
+        input.solve2() shouldBeEqual 354
     }
 
     test("Levels are safe when they are all increasing or all decreasing.") {
@@ -71,7 +71,7 @@ object Day2 {
     data class Levels(val levels: List<Int>) {
         fun areSafe(problemDampener: ProblemDampener? = null): Boolean =
             problemDampener?.areSafe(this)
-                    ?: haveConsistentOrder() && notMoreOfADifferenceThan(3)
+                    ?: (haveConsistentOrder() && notMoreOfADifferenceThan(3))
 
         private fun notMoreOfADifferenceThan(allowedDifference: Int) =
             levels.zipWithNext()
