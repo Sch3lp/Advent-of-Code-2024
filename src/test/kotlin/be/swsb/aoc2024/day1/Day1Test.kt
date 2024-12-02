@@ -1,11 +1,15 @@
 package be.swsb.aoc2024.day1
 
-import be.swsb.aoc2024.day1.Distance.Companion.sum
-import be.swsb.aoc2024.day1.SimilarityScore.Companion.sum
+import be.swsb.aoc2024.day1.Day1.Distance.Companion.sum
+import be.swsb.aoc2024.day1.Day1.SimilarityScore.Companion.sum
+import be.swsb.aoc2024.day1.Day1.solve
+import be.swsb.aoc2024.day1.Day1.solve2
 import be.swsb.aoc2024.util.readFile
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import kotlin.math.absoluteValue
+
+typealias LocationPair = Pair<Day1.LocationId, Day1.LocationId>
 
 class Day1Test : FunSpec({
 
@@ -30,46 +34,58 @@ class Day1Test : FunSpec({
     }
 })
 
-fun String.solve(): Long {
-    val (left, right) = extractLocationIds()
-    val sortedLocationPairs = left.sorted().zip(right.sorted())
-    val distances = sortedLocationPairs.map(LocationPair::distance)
-    return distances.sum()
-}
-fun String.solve2(): Long {
-    val (left, right) = extractLocationIds()
-    val leftSimilarities = left.map { locationId -> locationId.similaritiesIn(right) }
-    val similarityScores = leftSimilarities.map(Similarity::similarityScore)
-    return similarityScores.sum()
-}
+object Day1 {
+    fun String.solve(): Long {
+        val (left, right) = extractLocationIds()
+        val sortedLocationPairs = left.sorted().zip(right.sorted())
+        val distances = sortedLocationPairs.map{ it.distance() }
+        return distances.sum()
+    }
 
-fun String.extractLocationIds(): Pair<List<LocationId>, List<LocationId>> {
-    val locationIdPairs = lines().map { line ->
-        line.split("   ").let { (left, right) ->
-            left.toLocationId() to right.toLocationId()
+    fun String.solve2(): Long {
+        val (left, right) = extractLocationIds()
+        val leftSimilarities = left.map { locationId -> locationId.similaritiesIn(right) }
+        val similarityScores = leftSimilarities.map(Similarity::similarityScore)
+        return similarityScores.sum()
+    }
+
+    private fun String.extractLocationIds(): Pair<List<LocationId>, List<LocationId>> {
+        val locationIdPairs = lines().map { line ->
+            line.split("   ").let { (left, right) ->
+                left.toLocationId() to right.toLocationId()
+            }
+        }
+        return locationIdPairs.unzip()
+    }
+
+    private fun String.toLocationId() = LocationId(this.toLong())
+    @JvmInline
+    value class LocationId(private val value: Long) : Comparable<LocationId> {
+        override fun compareTo(other: LocationId): Int = this.value.compareTo(other.value)
+        fun distanceTo(other: LocationId) = Distance((this.value - other.value))
+        operator fun times(occurrences: Int): SimilarityScore = SimilarityScore(this.value * occurrences)
+        fun similaritiesIn(locationIds: List<LocationId>) = Similarity(this, locationIds.count { this == it })
+    }
+
+    private fun LocationPair.distance() = first.distanceTo(second)
+
+    data class Distance(private val value: Long) : Comparable<Distance> {
+        private val absoluteValue = value.absoluteValue
+        override fun compareTo(other: Distance): Int = this.absoluteValue.compareTo(other.absoluteValue)
+
+        companion object {
+            fun List<Distance>.sum() = sumOf { it.absoluteValue }
         }
     }
-    return locationIdPairs.unzip()
-}
-private fun String.toLocationId() = LocationId(this.toLong())
-@JvmInline value class LocationId(private val value: Long): Comparable<LocationId> {
-    override fun compareTo(other: LocationId): Int = this.value.compareTo(other.value)
-    fun distanceTo(other: LocationId) = Distance((this.value - other.value))
-    operator fun times(occurrences: Int): SimilarityScore = SimilarityScore(this.value * occurrences)
-    fun similaritiesIn(locationIds: List<LocationId>) = Similarity(this, locationIds.count { this == it })
-}
 
-typealias LocationPair = Pair<LocationId, LocationId>
-fun LocationPair.distance() = first.distanceTo(second)
+    data class Similarity(private val locationId: LocationId, private val occurrences: Int) {
+        val similarityScore: SimilarityScore get() = locationId * occurrences
+    }
 
-data class Distance(private val value: Long): Comparable<Distance> {
-    private val absoluteValue = value.absoluteValue
-    override fun compareTo(other: Distance): Int = this.absoluteValue.compareTo(other.absoluteValue)
-    companion object { fun List<Distance>.sum() = sumOf { it.absoluteValue } }
-}
-data class Similarity(private val locationId: LocationId, private val occurrences: Int) {
-    val similarityScore: SimilarityScore get() = locationId * occurrences
-}
-@JvmInline value class SimilarityScore(private val value: Long) {
-    companion object { fun List<SimilarityScore>.sum() = sumOf { it.value } }
+    @JvmInline
+    value class SimilarityScore(private val value: Long) {
+        companion object {
+            fun List<SimilarityScore>.sum() = sumOf { it.value }
+        }
+    }
 }
