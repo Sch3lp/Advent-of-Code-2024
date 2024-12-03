@@ -7,7 +7,6 @@ import be.swsb.aoc2024.day2.Day2.solve2
 import be.swsb.aoc2024.util.readFile
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
-import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import kotlin.math.absoluteValue
 
