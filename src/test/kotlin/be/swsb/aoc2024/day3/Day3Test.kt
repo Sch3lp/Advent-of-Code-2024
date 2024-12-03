@@ -6,6 +6,7 @@ import be.swsb.aoc2024.day3.Day3.solve2
 import be.swsb.aoc2024.util.readFile
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.longs.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 
 class Day3Test : FunSpec({
@@ -22,12 +23,12 @@ class Day3Test : FunSpec({
 
     test("example input part 2") {
         val input = readFile("day3/exampleInput.txt")
-        input.solve2() shouldBeEqual -1
+        input.solve2() shouldBeEqual 161
     }
 
     test("actual input part 2") {
         val input = readFile("day3/input.txt")
-        input.solve2() shouldBeEqual -1
+        input.solve2() shouldBeLessThan 101681733
     }
 
     test("Instructions only executes correctly parsed multiplication") {
@@ -44,19 +45,40 @@ object Day3 {
     }
 
     fun String.solve2(): Long {
-        return 0
+        val instructions = lines().map { line -> Instructions(line, true) }
+        return instructions.sumOf { it.execute() }
     }
 
-    class Instructions(val line: String) {
+    class Instructions(private val line: String, private val useState: Boolean = false) {
         fun execute(): Long {
-            return Regex("""mul\(\d+,\d+\)""")
+            var state = State.Do
+            val regex = if (useState) Regex("""mul\(\d+,\d+\)|do\(\)|don't\(\)""") else Regex("""mul\(\d+,\d+\)""")
+            return regex
                 .findAll(line)
                 .map { it.value }
                 .map {
-                    val (left,right) = it.drop(4).dropLast(1).split(",")
-                    left.toLong() * right.toLong()
+                    when (it) {
+                        "do()" -> {
+                            state = State.Do; 0
+                        }
+
+                        "don't()" -> {
+                            state = State.Dont; 0
+                        }
+
+                        else -> {
+                            if (state == State.Do) {
+                                val (left, right) = it.drop("mul(".length).dropLast(1).split(",")
+                                left.toLong() * right.toLong()
+                            } else 0
+                        }
+                    }
                 }.sum()
         }
+    }
+
+    enum class State {
+        Do, Dont
     }
 
 }
