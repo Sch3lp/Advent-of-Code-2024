@@ -43,6 +43,7 @@ data class Point(val x: Int, val y: Int) {
     fun isDiagonalTo(other: Point): Boolean = this in other.diagonalNeighbours
 
     operator fun plus(vector: Point) = Point(x + vector.x, this.y + vector.y)
+    operator fun minus(vector: Point) = Point(x - vector.x, y - vector.y)
     operator fun times(multiplier: Int) = Point(x = x * multiplier, y = y * multiplier)
     operator fun rangeTo(other: Point): Set<Point> {
         val vector = this.determineVectorTo(other)

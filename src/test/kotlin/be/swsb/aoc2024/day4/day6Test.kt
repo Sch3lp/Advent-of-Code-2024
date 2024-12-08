@@ -3,6 +3,7 @@ package be.swsb.aoc2024.day4
 import be.swsb.aoc2024.day4.Day4.solve
 import be.swsb.aoc2024.day4.Day4.solve2
 import be.swsb.aoc2024.util.Point
+import be.swsb.aoc2024.util.parseToGrid
 import be.swsb.aoc2024.util.readFile
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
@@ -46,13 +47,6 @@ class Day4Test : FunSpec({
         )
     }
 })
-
-fun parseToGrid(input: String): Map<Point, Char> = input.lines()
-    .flatMapIndexed { y, line ->
-        line.mapIndexed { x, character ->
-            Point(x, y) to character
-        }
-    }.toMap()
 
 object Day4 {
     fun String.solve(): Long {
