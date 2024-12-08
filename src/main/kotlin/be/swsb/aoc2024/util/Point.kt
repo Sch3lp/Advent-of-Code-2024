@@ -12,6 +12,12 @@ data class Point(val x: Int, val y: Int) {
             Point(-1, 1), Point(0, 1), Point(1, 1),
         )
     }
+    private val diagonalVectors by lazy {
+        listOf(
+            Point(-1, -1), Point(1, -1),
+            Point(-1, 1), Point(1, 1),
+        )
+    }
 
     //@formatter:off
     val neighbours: Set<Point>
@@ -71,6 +77,9 @@ data class Point(val x: Int, val y: Int) {
 
     fun neighbourLines(length: Int): List<Set<Point>> =
         neighbourVectors.map { vector -> line(vector, length) }
+
+    fun diagonalLines(length: Int): List<Set<Point>> =
+        diagonalVectors.map { vector -> line(vector, length) }
 
     companion object {
         fun at(x: Int, y: Int) = Point(x, y)

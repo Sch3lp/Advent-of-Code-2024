@@ -45,6 +45,17 @@ class PointTest: FunSpec({
         )
     }
 
+    test("return diagonal neighbouring points of point") {
+        val point = Point(4, 3)
+
+        val actual = point.diagonalNeighbours
+
+        actual.shouldContainExactlyInAnyOrder(
+            Point(3, 2), Point(5, 2),
+            Point(3, 4), Point(5, 4)
+        )
+    }
+
     test("determine vector") {
         Point(0, 0).determineVectorTo(Point(0, 0)) shouldBeEqual Point(0, 0)
         Point(0, 0).determineVectorTo(Point(0, 3)) shouldBeEqual Point(0, 1)

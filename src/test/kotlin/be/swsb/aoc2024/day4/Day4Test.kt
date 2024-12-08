@@ -22,12 +22,12 @@ class Day4Test : FunSpec({
 
     test("example input part 2") {
         val input = readFile("day4/exampleInput.txt")
-        input.solve2() shouldBeEqual 1
+        input.solve2() shouldBeEqual 9
     }
 
     test("actual input part 2") {
         val input = readFile("day4/input.txt")
-        input.solve2() shouldBeEqual 1
+        input.solve2() shouldBeEqual 1888
     }
 
     test("can parse to grid with positions and characters") {
@@ -54,26 +54,12 @@ fun parseToGrid(input: String): Map<Point, Char> = input.lines()
         }
     }.toMap()
 
-val exampleInput = """
-    ....XXMAS.
-    .SAMXMS...
-    ...S..A...
-    ..A.A.MS.X
-    XMASAMX.MM
-    X.....XA.A
-    S.S.S.S.SS
-    .A.A.A.A.A
-    ..M.M.M.MM
-    .X.X.XMASX
-""".trimIndent()
-
-
 object Day4 {
     fun String.solve(): Long {
         val grid = parseToGrid(this)
         val xPositions = grid.filter { (_, value) -> value == 'X' }.keys
         return xPositions.sumOf { x ->
-            //compute 4 next positions in all neighbour vectors
+            //compute 4 next positions (lines) in all neighbour vectors
             x.neighbourLines(4).sumOf { line ->
                 //fetch all of these from the grid
                 val wordOnLine = line.map { point -> grid[point] ?: "" }.joinToString(separator = "")
@@ -85,7 +71,14 @@ object Day4 {
     }
 
     fun String.solve2(): Long {
-        return 0
+        val grid = parseToGrid(this)
+        val aPositions = grid.filter { (_, value) -> value == 'A' }.keys
+        return aPositions.sumOf { a ->
+            //compute diagonal neigbhours
+            val diagonalNeighbourCharacters = a.diagonalNeighbours.map { point -> grid[point] ?: "" }.joinToString(separator = "")
+            val crossMasses = listOf("MSMS", "SMSM", "MMSS", "SSMM")
+            if (diagonalNeighbourCharacters in crossMasses) 1L else 0
+        }
     }
 }
 
